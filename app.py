@@ -38,7 +38,7 @@ st.markdown(custom_html, unsafe_allow_html=True)
 #def alim_validados(path):
 #    return pd.read_excel(path)
 
-path_resultados = "C:/GITEA/2022_23_LIGHT_Sust_Concessao/4. Execução/4. Inventário de campo/3. Execução/3. Streamlit/2. Resultados/"
+path_resultados = "C:/GIT/2023_Light_Dash/BASE_DADOS/"
 #alimentadores_validados = alim_validados(path_alimentadores_validados)
 
 resultados_fme = pd.read_pickle(path_resultados + '01_13.12.2023_Extracao_Trechos_alimentadores.pkl')
@@ -137,7 +137,7 @@ if __name__ == "__main__":
         # regiao_df_codigo = regiao_df[regiao_df['CODIGO'].isin(codigo_selected)]
 
         # Carregue o DataFrame apenas uma vez fora da função para evitar carregamentos repetidos
-        regiao_df_mapas = pd.read_excel('C:/GITEA/2022_23_LIGHT_Sust_Concessao/4. Execução/4. Inventário de campo/3. Execução/3. Streamlit/1. Codigo/regiao_df_mapas.xlsx')
+        regiao_df_mapas = pd.read_excel('C:/GIT/2023_Light_Dash/regiao_df_mapas.xlsx')
 
         regiao_df_mapas['geometry'] = regiao_df_mapas['geometry'].apply(wkt.loads)
 
