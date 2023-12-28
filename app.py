@@ -176,6 +176,7 @@ if authentication_status:
 
         # Mapas
     with tab2:
+       
         regional = st.selectbox(
         'Regional',
         resultados_fme['REGIONAL'].unique()
@@ -187,7 +188,7 @@ if authentication_status:
         alimentadores = st.selectbox(
             'Linha',
             regiao_df['ALIMENTADOR'].unique()
-        )
+            )
 
         alimentadores = [alimentadores] if isinstance(alimentadores, str) else alimentadores
         regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
