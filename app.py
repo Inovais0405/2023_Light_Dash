@@ -114,7 +114,7 @@ st.subheader('-  1°  Onda', divider='gray')
 # Autenticador Streamlit
 
     #Importação Yaml
-with open('D:/2023_Light_Dash/Credencias.yml') as file:
+with open('Credencias.yml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
 
