@@ -1,0 +1,21 @@
+credentials:
+  usernames:
+    dmendes:
+      email: dmendes@caldenconsultoria.com
+      name: Diogo Mendes
+      password: $2b$12$Mnz7TlwhHai/0Qw40zFyGebPzDk6PG6uXbUmjV9XilvN4LaCfnRx. # To be replaced with hashed password
+    inovais:
+      email: inovais@caldenconsultoria.com
+      name: Isabela Novais
+      password: $2b$12$Zft9AexJh45USgcwperJ9u4oHQPy3nPGtGKQndVh/KvvprOVxwnwW # To be replaced with hashed password
+    mhunziker:
+      email: mhunziker@caldenconsultoria.com
+      name: Martin Hunziker
+      password: $2b$12$42El6KKAaKAF/4qXLqpDh.fScVnfufrc9rl/XAuioyIEWMv8viINm # To be replaced with hashed password    
+cookie:
+  expiry_days: 0
+  key: random_signature_key # Must be string
+  name: random_cookie_name
+preauthorized:
+  emails:
+  - melsby@gmail.com

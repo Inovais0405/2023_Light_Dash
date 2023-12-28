@@ -13,30 +13,15 @@ import os
 #import json
 #from shapely.geometry import mapping
 from shapely import wkt
+import streamlit_authenticator as stauth
+
+import yaml
+from yaml.loader import SafeLoader
+from PIL import Image
 
 
+# Leitura e processamento dos dados
 
-# Configurações do Streamlit
-st.set_page_config(layout='centered')
-
-### Interface STREAMLIT
-
-
-custom_html = """
-<div style="max-width: 1000px; margin: 0 auto;">
-    <div style="background-color: #009B91; padding: 20px; text-align: center; width: 100%;">
-        <h1 style="color: white;">Inventário LIGHT - Primeira Onda</h1>
-    </div>
-</div>
-"""
-
-# Adicione o HTML personalizado ao seu aplicativo Streamlit
-st.markdown(custom_html, unsafe_allow_html=True)
-
-
-# Leitura dos dados de alimentadores validados
-#def alim_validados(path):
-#    return pd.read_excel(path)
 
 path_resultados = "BASE_DADOS/"
 #alimentadores_validados = alim_validados(path_alimentadores_validados)
@@ -105,14 +90,93 @@ def style_function(feature):
 
     return {'color': color, 'weight': 2}
 
-if __name__ == "__main__":
+
+
+
+
+
+# Setando pagina do stream lit
+
+st.set_page_config(layout="wide")#, page_icon = "D:/2023_Light_Dash/logo.png")
+
+# Titulo heade
+#
+
+image = Image.open('D:/2023_Light_Dash/logo.png')
+st.image(image)
+
+  
+st.header('Inventário Light',divider='gray')
+st.subheader('-  1°  Onda', divider='gray')
+
+
+# Autenticador Streamlit
+
+    #Importação Yaml
+with open('D:/2023_Light_Dash/Credencias.yml') as file:
+    config = yaml.load(file, Loader=SafeLoader)
+
+
+    #Criar objeto autenticador
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days'],
+    config['preauthorized']
+)
+    #Renderizando o widget
+
+name, authentication_status, username = authenticator.login('Login', 'main')
+
+
+    #Autenticando opcao 1
+
+if authentication_status:
+    authenticator.logout('Logout', 'main')
+
+    # Conteudo
+    #st.set_page_config(layout='centered')
+    st.write(f'Welcome *{name}*')
+
+        # Titulo html
     
-    tab1, tab2, tab3 = st.tabs(["Painel Gerencial", "Mapas", "Painel Operancional"])
+    
+    # custom_html = """
+    # <div style="max-width: 1000px; margin: 0 auto;">
+    #     <div style="background-color: #009B91; padding: 20px; text-align: center; width: 100%;">
+    #         <h1 style="color: white;">Inventário LIGHT - Primeira Onda</h1>
+    #     </div>
+    # </div>
+    # """
+    # st.markdown(custom_html, unsafe_allow_html=True)
+    
+    # Abas
+
+
+
+        #Definição das abas
+        
+    tab1, tab2 = st.tabs(["Painel Gerencial", "Mapas"])
+
+        # Power BI
 
     with tab1:
-        st.markdown('<iframe title="Report Section" width="1024" height="1060" src="https://app.powerbi.com/view?r=eyJrIjoiZjMyMTM2NjctZjlmMy00MTQ4LThkMTMtMjBhMTYyOWNiMjM2IiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9" frameborder="0" allowFullScreen="true"></iframe>',unsafe_allow_html=True)
 
+        Power_bi_code = '''
+        <iframe title="15.12.2023_Light_Status_Inventario_v2_st" 
+                width="100%" height="600" 
+                src="https://app.powerbi.com/view?r=eyJrIjoiZjMyMTM2NjctZjlmMy00MTQ4LThkMTMtMjBhMTYyOWNiMjM2IiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9" 
+                frameborder="0" 
+                allowFullScreen="true">
+        </iframe>
+        
+        '''
+        st.markdown(Power_bi_code,unsafe_allow_html=True)
+
+        # Mapas
     with tab2:
+       
         regional = st.selectbox(
         'Regional',
         resultados_fme['REGIONAL'].unique()
@@ -124,26 +188,18 @@ if __name__ == "__main__":
         alimentadores = st.selectbox(
             'Linha',
             regiao_df['ALIMENTADOR'].unique()
-        )
+            )
 
         alimentadores = [alimentadores] if isinstance(alimentadores, str) else alimentadores
         regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
 
-        # Criar o multiselect para a coluna 'CÓDIGO'
-        # Filtrar DataFrame com base nos códigos selecionados
-        
-        
-        # codigo_selected = st.multiselect("Selecione os códigos dos trechos já inventariados", regiao_df['CODIGO'].unique(), key="codigo_multiselect")
-        # regiao_df_codigo = regiao_df[regiao_df['CODIGO'].isin(codigo_selected)]
-
-        # Carregue o DataFrame apenas uma vez fora da função para evitar carregamentos repetidos
         regiao_df_mapas = pd.read_excel('regiao_df_mapas.xlsx')
 
         regiao_df_mapas['geometry'] = regiao_df_mapas['geometry'].apply(wkt.loads)
 
         regiao_df_mapas_gdf = gpd.GeoDataFrame(regiao_df_mapas, geometry='geometry')
 
-              
+            
 
         
 
@@ -151,7 +207,7 @@ if __name__ == "__main__":
         centroide = regiao_df.to_crs(22182).centroid.to_crs(4326).iloc[[0]]
 
         # Criar o mapa folium
-        mapa = folium.Map(location=[centroide.y, centroide.x], zoom_start=13, width=900, height=900)
+        mapa = folium.Map(location=[centroide.y, centroide.x], zoom_start=13)
 
         # Adicionar basemaps ao mapa usando um loop
         for name, tile_layer in basemaps.items():
@@ -203,7 +259,10 @@ if __name__ == "__main__":
         # Adicionar controle de tela cheia
         plugins.Fullscreen().add_to(mapa)
 
-        # Exibir mapa
+        
+     
+
+        # Exibir mapa 
         folium_static(mapa)
     
 
@@ -221,3 +280,17 @@ if __name__ == "__main__":
                     file_name=os.path.join(caminho_salvar),
                     key="download_mapa_html"
                 )
+
+
+elif authentication_status == False:
+    st.error('Username/password is incorrect')
+elif authentication_status == None:
+    st.warning('Please enter your username and password')
+    
+
+
+
+
+
+
+
