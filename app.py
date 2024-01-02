@@ -20,6 +20,7 @@ from yaml.loader import SafeLoader
 from PIL import Image
 
 
+
 # Leitura e processamento dos dados
 
 
@@ -102,7 +103,7 @@ st.set_page_config(layout="wide")#, page_icon = "D:/2023_Light_Dash/logo.png")
 # Titulo heade
 #
 
-image = Image.open('D:/2023_Light_Dash/logo.png')
+image = Image.open('logo.png')
 st.image(image)
 
   
@@ -113,7 +114,7 @@ st.subheader('-  1°  Onda', divider='gray')
 # Autenticador Streamlit
 
     #Importação Yaml
-with open('D:/2023_Light_Dash/Credencias.yml') as file:
+with open('Credencias.yml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
 
@@ -260,7 +261,6 @@ if authentication_status:
         plugins.Fullscreen().add_to(mapa)
 
         
-     
 
         # Exibir mapa 
         folium_static(mapa)
