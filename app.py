@@ -27,7 +27,7 @@ from PIL import Image
 path_resultados = "BASE_DADOS/"
 #alimentadores_validados = alim_validados(path_alimentadores_validados)
 
-resultados_fme = pd.read_pickle(path_resultados + '01_13.12.2023_Extracao_Trechos_alimentadores.pkl')
+resultados_fme = pd.read_pickle(path_resultados + '_Trechos_MT_mapas.pkl')
 
 
 # Leitura AR

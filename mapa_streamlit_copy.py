@@ -59,7 +59,7 @@ options = st.selectbox('Por favor selecione', ['Power BI Dashboard', 'Mapas Alim
 
 if options == 'Power BI Dashboard':
 
-    st.markdown('<iframe title="Status_Inventário_v2_bru" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=8aebaa75-c550-486f-ae18-1839a03375f1&autoAuth=true&ctid=5d29356d-609d-444f-a22f-9d38022b00ef" frameborder="0" allowFullScreen="true"></iframe>',unsafe_allow_html=True)
+    st.markdown('https://app.powerbi.com/view?r=eyJrIjoiNzQ0N2QwYTktZWFhZC00ZmQ1LWFiNzQtODgyN2FmOTg2M2I4IiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9',unsafe_allow_html=True)
 
     
 
