@@ -177,25 +177,6 @@ if authentication_status:
 
         # Mapas
     with tab2:
-
-        regiao_df_mapas = pd.read_excel('regiao_df_mapas.xlsx')
-
-        regiao_df_mapas['geometry'] = regiao_df_mapas['geometry'].apply(wkt.loads)
-
-        regiao_df_mapas_gdf = gpd.GeoDataFrame(regiao_df_mapas, geometry='geometry')
-
-        
-        # status = st.selectbox(
-        # 'Status',
-        # (regiao_df_mapas_gdf['status'].unique())
-        # index=None,
-        # placeholder="Selecione Status ..."
-        
-        # # )
-
-        # status = [status] if isinstance(status, str) else status
-        # regiao_df = regiao_df_mapas_gdf[regiao_df_mapas_gdf['status'].isin(status)]
-
        
         regional = st.selectbox(
         'Regional',
@@ -205,28 +186,23 @@ if authentication_status:
         regional = [regional] if isinstance(regional, str) else regional
         regiao_df = resultados_fme[resultados_fme['REGIONAL'].isin(regional)]
 
-        
-
         alimentadores = st.selectbox(
             'Linha',
-            (regiao_df['ALIMENTADOR'].unique()),
-            index=None,
-            placeholder="Selecione a linha ..."
+            regiao_df['ALIMENTADOR'].unique()
             )
-        
+
         alimentadores = [alimentadores] if isinstance(alimentadores, str) else alimentadores
-        # Verifica se a opção selecionada não é o placeholder antes de aplicar o filtro
-       # Verifica se a opção selecionada não é o placeholder e se é uma lista antes de aplicar o filtro
-        if alimentadores != 'Selecione a linha ...' and isinstance(alimentadores, list):
-            regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
-        else:
-            regiao_df = resultados_fme[resultados_fme['REGIONAL'].isin(regional)]
+        regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
 
-        #regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
+        regiao_df_mapas = pd.read_excel('regiao_df_mapas.xlsx')
+
+        regiao_df_mapas['geometry'] = regiao_df_mapas['geometry'].apply(wkt.loads)
+
+        regiao_df_mapas_gdf = gpd.GeoDataFrame(regiao_df_mapas, geometry='geometry')
+
+            
 
         
-       
-            
 
         # Centroides Localidades
         centroide = regiao_df.to_crs(22182).centroid.to_crs(4326).iloc[[0]]
@@ -244,8 +220,7 @@ if authentication_status:
         for name, shp_data, color in zip(['ASRO', 'COMUNIDADES_DOMINADAS_PELA_MILICIA', 'COMUNIDADES_DOMINADAS_PELO_AMIGOS_DOS_AMIGOS', 'COMUNIDADES_DOMINADAS_PELO_COMANDO_VEMELHO', 'COMUNIDADES_DOMINADAS_PELO_TERCEIRO_COMANDO_PURO'], [shp_AR1, shp_AR2, shp_AR3, shp_AR4, shp_AR5], colors):
             folium.Choropleth(geo_data=shp_data, fill_color=color, name=name).add_to(mapa)
 
-                    
-        
+        # Adição de GeoJson para polígonos
         GeoJson(regiao_df, name=f'{alimentadores}').add_to(mapa)
 
         # # Função de estilo
@@ -258,22 +233,21 @@ if authentication_status:
         # # Adicionar GeoJson ao mapa com a função de estilo
         # geojson_layer = GeoJson(regiao_df.to_json(), style_function=style_function).add_to(mapa)
 
-        
+        if regiao_df['ALIMENTADOR'].tolist() == regiao_df_mapas_gdf['ALIMENTADOR'].tolist():
+            # As séries têm os mesmos valores
+            geojson_layer = GeoJson(regiao_df_mapas_gdf.to_json(), style_function=style_function).add_to(mapa)
 
-        # if regiao_df['ALIMENTADOR'].tolist() == regiao_df_mapas_gdf['ALIMENTADOR'].tolist():
-        #     # As séries têm os mesmos valores
-        #     geojson_layer = GeoJson(regiao_df_mapas_gdf.to_json(), style_function=style_function).add_to(mapa)
+            # Calcular o percentual de progresso
+            total_codigos_alimentador = regiao_df_mapas_gdf['CODIGO'].nunique()
+            codigos_selecionados = len(regiao_df_mapas_gdf[regiao_df_mapas_gdf['status'] == 'campo']['CODIGO'])
+            percentual_progresso = (codigos_selecionados / total_codigos_alimentador) * 100
 
-        #     # Calcular o percentual de progresso
-        #     total_codigos_alimentador = regiao_df_mapas_gdf['CODIGO'].nunique()
-        #     codigos_selecionados = len(regiao_df_mapas_gdf[regiao_df_mapas_gdf['status'] == 'campo']['CODIGO'])
-        #     percentual_progresso = (codigos_selecionados / total_codigos_alimentador) * 100
+            # Mostrar o título com o percentual de progresso
+            st.write(f"Progresso: {percentual_progresso:.2f}%")
+        else:
+            # As séries não têm os mesmos valores
+            st.write("Não iniciou o inventário dessa Linha.")
 
-        #     # Mostrar o título com o percentual de progresso
-        #     st.write(f"Progresso: {percentual_progresso:.2f}%")
-        # else:
-        #     # As séries não têm os mesmos valores
-        #     st.write("Não iniciou o inventário dessa Linha.")
 
 
         
