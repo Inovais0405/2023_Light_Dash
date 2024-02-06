@@ -32,6 +32,8 @@ def load_data():
     resultados_fme = pd.read_pickle(path_resultados + '01_13.12.2023_Extracao_Trechos_alimentadores.pkl')
     return resultados_fme
 
+#Leitura BI
+status_BI = pd.read_pickle(path_resultados + 'Status_alimentador.pkl')
 # Leitura AR
 
 shp_AR0 = pd.read_pickle(path_resultados + "shp_AR0.pkl")
@@ -81,11 +83,11 @@ def style_function(feature):
             
             # Define a cor com base no status
     color = (
-        'gray' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['status'] == 'planejamento']['CODIGO'].values 
-        else 'yellow' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['status'] == 'campo']['CODIGO'].values
-        else 'orange' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['status'] == 'postagem']['CODIGO'].values
-        else 'red' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['status'] == 'conciliacao']['CODIGO'].values
-        else 'green' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['status'] == 'concluido']['CODIGO'].values
+        'gray' if codigo in status_BI[status_BI['Macro-Status'] == 'planejamento']['CODIGO'].values 
+        else 'yellow' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['Macro-Status'] == 'campo']['CODIGO'].values
+        else 'orange' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['Macro-Status'] == 'postagem']['CODIGO'].values
+        else 'red' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['Macro-Status'] == 'conciliacao']['CODIGO'].values
+        else 'green' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['Macro-Status'] == 'concluido']['CODIGO'].values
         else 'blue'
         )
 
@@ -180,36 +182,53 @@ if authentication_status:
         # Mapas
     with tab2:
 
-        regiao_df_mapas = pd.read_excel('regiao_df_mapas.xlsx')
+        # regiao_df_mapas = pd.read_excel('regiao_df_mapas.xlsx')
 
-        regiao_df_mapas['geometry'] = regiao_df_mapas['geometry'].apply(wkt.loads)
+        # regiao_df_mapas['geometry'] = regiao_df_mapas['geometry'].apply(wkt.loads)
 
-        regiao_df_mapas_gdf = gpd.GeoDataFrame(regiao_df_mapas, geometry='geometry')
+        #regiao_df_mapas_gdf = gpd.GeoDataFrame(regiao_df_mapas, geometry='geometry')
 
         
-        # status = st.selectbox(
-        # 'Status',
-        # (regiao_df_mapas_gdf['status'].unique())
-        # index=None,
-        # placeholder="Selecione Status ..."
+        
         
         # # )
 
-        # status = [status] if isinstance(status, str) else status
-        # regiao_df = regiao_df_mapas_gdf[regiao_df_mapas_gdf['status'].isin(status)]
+        
         # Carrega os dados
         resultados_fme = load_data()
+
+        resultados_fme = resultados_fme.merge(status_BI, on='ALIMENTADOR')
        
         regional = st.selectbox(
-        'Regional',
-        resultados_fme['REGIONAL'].unique()
-        )
+            'Regional',
+            resultados_fme['REGIONAL'].unique()
+            )
+        
+       
 
         regional = [regional] if isinstance(regional, str) else regional
+        
         regiao_df = resultados_fme[resultados_fme['REGIONAL'].isin(regional)]
-
         
 
+        alim_regional = regiao_df['ALIMENTADOR'].unique()
+        
+        status = st.selectbox(
+            'Status',
+            (status_BI['Macro-Status'].unique()),
+            index=None,
+            placeholder="Selecione Status ..."
+            )
+        status = [status] if isinstance(status, str) else status
+        if status != "Selecione Status ..." and isinstance(status, list):
+            
+            regiao_df = regiao_df[regiao_df['Macro-Status'].isin(status)]
+            # Verifica se o DataFrame resultante está vazio
+            if regiao_df.empty:
+                # Se estiver vazio, exibe uma mensagem informando que não há alimentadores para o status selecionado
+                st.write("Nenhum alimentador encontrado para o status selecionado.")
+            
+         
         alimentadores = st.selectbox(
             'Linha',
             (regiao_df['ALIMENTADOR'].unique()),
@@ -218,22 +237,16 @@ if authentication_status:
             )
         
         alimentadores = [alimentadores] if isinstance(alimentadores, str) else alimentadores
-        # Verifica se a opção selecionada não é o placeholder antes de aplicar o filtro
-       # Verifica se a opção selecionada não é o placeholder e se é uma lista antes de aplicar o filtro
+    #     # Verifica se a opção selecionada não é o placeholder antes de aplicar o filtro
+    #    # Verifica se a opção selecionada não é o placeholder e se é uma lista antes de aplicar o filtro
         if alimentadores != 'Selecione a linha ...' and isinstance(alimentadores, list):
             regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
-        else:
-            regiao_df = resultados_fme[resultados_fme['REGIONAL'].isin(regional)]
-
-        #regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
-
+        
+       
+        
         # Lógica para a criação do mapa
         with st.spinner("Carregando mapa..."):
-            if alimentadores != 'Selecione a linha ...' and isinstance(alimentadores, list):
-                regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
-            else:
-                regiao_df = resultados_fme[resultados_fme['REGIONAL'].isin(regional)]
-
+            
             # Centroides Localidades
             centroide = regiao_df.to_crs(22182).centroid.to_crs(4326).iloc[[0]]
 
@@ -250,7 +263,7 @@ if authentication_status:
             for name, shp_data, color in zip(['ASRO', 'COMUNIDADES_DOMINADAS_PELA_MILICIA', 'COMUNIDADES_DOMINADAS_PELO_AMIGOS_DOS_AMIGOS', 'COMUNIDADES_DOMINADAS_PELO_COMANDO_VEMELHO', 'COMUNIDADES_DOMINADAS_PELO_TERCEIRO_COMANDO_PURO'], [shp_AR1, shp_AR2, shp_AR3, shp_AR4, shp_AR5], colors):
                 folium.Choropleth(geo_data=shp_data, fill_color=color, name=name).add_to(mapa)
 
-            GeoJson(regiao_df, name=f'{alimentadores}').add_to(mapa)
+            GeoJson(regiao_df, name=f'{regional}').add_to(mapa)
 
        
             
@@ -283,7 +296,7 @@ if authentication_status:
         #     return {'color': color, 'weight': 2}
         
         # # Adicionar GeoJson ao mapa com a função de estilo
-        # geojson_layer = GeoJson(regiao_df.to_json(), style_function=style_function).add_to(mapa)
+        #geojson_layer = GeoJson(regiao_df.to_json(), style_function=style_function).add_to(mapa)
 
         
 
