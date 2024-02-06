@@ -1,0 +1,27 @@
+[33m8823b4e[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m excluindo base FME, arquivos muito grandes
+[33me74c50e[m exclui arquivo grande
+[33m015e201[m mudança na otimização do mapa
+[33m3222d4a[m adicinando base FME NO GIT e melhorando performance dos mapas
+[33mbb892ed[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge branch 'main' of https://github.com/Inovais0405/2023_Light_Dash
+[33m9de371e[m Status Alimentador
+[33m7f1a3b3[m Revert "mudanças nos mapas - plotagem"
+[33m8355a1d[m V3_BI
+[33mdd65e52[m mudanças nos mapas - plotagem
+[33m07b03f3[m senhas novos usuários
+[33m87eef23[m credenciais
+[33m381ee2e[m merging versões
+[33m3b1a4c3[m caminho credenciais
+[33m6f5670c[m logo ajuste pasta
+[33mea549c4[m lib pillow
+[33m1cc545c[m require autenticator
+[33m1349f97[m Merge branch 'main' of https://github.com/Inovais0405/2023_Light_Dash
+[33m5bf6b77[m inserindo a biblioteca streamlit_authenticator
+[33m36340ec[m streamlit
+[33m25f8f2f[m atualizacoes streamlit
+[33mdbe070b[m atualizando requirements
+[33ma74690a[m alterando caminho dos arquivos
+[33m1630b4a[m modificação requirements
+[33m616a4c1[m modificando arquivo requirements.txt
+[33mbf3f39c[m subindo para web
+[33mfd7a285[m Add files via upload
+[33m2927f81[m Initial commit

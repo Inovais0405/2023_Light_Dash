@@ -27,8 +27,10 @@ from PIL import Image
 path_resultados = "BASE_DADOS/"
 #alimentadores_validados = alim_validados(path_alimentadores_validados)
 
-resultados_fme = pd.read_pickle(path_resultados + '01_13.12.2023_Extracao_Trechos_alimentadores.pkl')
-
+@st.cache_data
+def load_data():
+    resultados_fme = pd.read_pickle(path_resultados + '01_13.12.2023_Extracao_Trechos_alimentadores.pkl')
+    return resultados_fme
 
 # Leitura AR
 
@@ -195,7 +197,8 @@ if authentication_status:
 
         # status = [status] if isinstance(status, str) else status
         # regiao_df = regiao_df_mapas_gdf[regiao_df_mapas_gdf['status'].isin(status)]
-
+        # Carrega os dados
+        resultados_fme = load_data()
        
         regional = st.selectbox(
         'Regional',
@@ -224,29 +227,53 @@ if authentication_status:
 
         #regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
 
-        
+        # Lógica para a criação do mapa
+        with st.spinner("Carregando mapa..."):
+            if alimentadores != 'Selecione a linha ...' and isinstance(alimentadores, list):
+                regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
+            else:
+                regiao_df = resultados_fme[resultados_fme['REGIONAL'].isin(regional)]
+
+            # Centroides Localidades
+            centroide = regiao_df.to_crs(22182).centroid.to_crs(4326).iloc[[0]]
+
+            # Criar o mapa folium
+            mapa = folium.Map(location=[centroide.y, centroide.x], zoom_start=13)
+
+            # Adicionar basemaps ao mapa usando um loop
+            for name, tile_layer in basemaps.items():
+                tile_layer.add_to(mapa)
+
+            # Adição de Choropleths
+            colors = ['orange', 'beige', 'pink', 'yellow', 'salmon']
+
+            for name, shp_data, color in zip(['ASRO', 'COMUNIDADES_DOMINADAS_PELA_MILICIA', 'COMUNIDADES_DOMINADAS_PELO_AMIGOS_DOS_AMIGOS', 'COMUNIDADES_DOMINADAS_PELO_COMANDO_VEMELHO', 'COMUNIDADES_DOMINADAS_PELO_TERCEIRO_COMANDO_PURO'], [shp_AR1, shp_AR2, shp_AR3, shp_AR4, shp_AR5], colors):
+                folium.Choropleth(geo_data=shp_data, fill_color=color, name=name).add_to(mapa)
+
+            GeoJson(regiao_df, name=f'{alimentadores}').add_to(mapa)
+
        
             
 
-        # Centroides Localidades
-        centroide = regiao_df.to_crs(22182).centroid.to_crs(4326).iloc[[0]]
+        # # Centroides Localidades
+        # centroide = regiao_df.to_crs(22182).centroid.to_crs(4326).iloc[[0]]
 
-        # Criar o mapa folium
-        mapa = folium.Map(location=[centroide.y, centroide.x], zoom_start=13)
+        # # Criar o mapa folium
+        # mapa = folium.Map(location=[centroide.y, centroide.x], zoom_start=13)
 
-        # Adicionar basemaps ao mapa usando um loop
-        for name, tile_layer in basemaps.items():
-            tile_layer.add_to(mapa)
+        # # Adicionar basemaps ao mapa usando um loop
+        # for name, tile_layer in basemaps.items():
+        #     tile_layer.add_to(mapa)
 
-        # Adição de Choropleths
-        colors = ['orange', 'beige', 'pink', 'yellow', 'salmon']
+        # # Adição de Choropleths
+        # colors = ['orange', 'beige', 'pink', 'yellow', 'salmon']
 
-        for name, shp_data, color in zip(['ASRO', 'COMUNIDADES_DOMINADAS_PELA_MILICIA', 'COMUNIDADES_DOMINADAS_PELO_AMIGOS_DOS_AMIGOS', 'COMUNIDADES_DOMINADAS_PELO_COMANDO_VEMELHO', 'COMUNIDADES_DOMINADAS_PELO_TERCEIRO_COMANDO_PURO'], [shp_AR1, shp_AR2, shp_AR3, shp_AR4, shp_AR5], colors):
-            folium.Choropleth(geo_data=shp_data, fill_color=color, name=name).add_to(mapa)
+        # for name, shp_data, color in zip(['ASRO', 'COMUNIDADES_DOMINADAS_PELA_MILICIA', 'COMUNIDADES_DOMINADAS_PELO_AMIGOS_DOS_AMIGOS', 'COMUNIDADES_DOMINADAS_PELO_COMANDO_VEMELHO', 'COMUNIDADES_DOMINADAS_PELO_TERCEIRO_COMANDO_PURO'], [shp_AR1, shp_AR2, shp_AR3, shp_AR4, shp_AR5], colors):
+        #     folium.Choropleth(geo_data=shp_data, fill_color=color, name=name).add_to(mapa)
 
                     
         
-        GeoJson(regiao_df, name=f'{alimentadores}').add_to(mapa)
+        # GeoJson(regiao_df, name=f'{alimentadores}').add_to(mapa)
 
         # # Função de estilo
         # def style_function(feature):
