@@ -168,7 +168,7 @@ if authentication_status:
 
     with tab1:
 
-        Power_bi_code = '<iframe title="19.01.2023_Light_Status_Inventario_v3" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=7112d904-1aa6-463d-91fc-bf332c35fea5&autoAuth=true&ctid=5d29356d-609d-444f-a22f-9d38022b00ef" frameborder="0" allowFullScreen="true"></iframe>'
+        Power_bi_code = '<iframe title="19.01.2023_Light_Status_Inventario_v3" width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiNzQ0N2QwYTktZWFhZC00ZmQ1LWFiNzQtODgyN2FmOTg2M2I4IiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9" frameborder="0" allowFullScreen="true"></iframe>'
         st.markdown(Power_bi_code,unsafe_allow_html=True)
 
         # Mapas
