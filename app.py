@@ -169,12 +169,9 @@ if authentication_status:
     with tab1:
 
         Power_bi_code = '''
-        <iframe title="15.12.2023_Light_Status_Inventario_v2_st" 
-                width="100%" height="600" 
-                src="https://app.powerbi.com/view?r=eyJrIjoiZjMyMTM2NjctZjlmMy00MTQ4LThkMTMtMjBhMTYyOWNiMjM2IiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9" 
-                frameborder="0" 
-                allowFullScreen="true">
-        </iframe>
+        <iframe title="19.01.2023_Light_Status_Inventario_v3" width="600" height="373.5" src="
+        https://app.powerbi.com/view?r=eyJrIjoiNzQ0N2QwYTktZWFhZC00ZmQ1LWFiNzQtODgyN2FmOTg2M2I4IiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9"
+        frameborder="0" allowFullScreen="true"></iframe>
         
         '''
         st.markdown(Power_bi_code,unsafe_allow_html=True)
@@ -247,6 +244,7 @@ if authentication_status:
         # Lógica para a criação do mapa
         with st.spinner("Carregando mapa..."):
             
+
             # Centroides Localidades
             centroide = regiao_df.to_crs(22182).centroid.to_crs(4326).iloc[[0]]
 
