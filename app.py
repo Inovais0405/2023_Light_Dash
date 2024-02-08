@@ -82,15 +82,15 @@ basemaps = {
 
 def style_function(feature):
             # Obtém o código da propriedade do GeoJson
-    codigo = feature['properties'].get('CODIGO')
+    status = feature['properties'].get('ALIMENTADOR')
             
             # Define a cor com base no status
     color = (
-        'gray' if codigo in status_BI[status_BI['Macro-Status'] == 'Em planejamento']['CODIGO'].values 
-        else 'yellow' if codigo in status_BI[status_BI['Macro-Status'] == 'campo']['CODIGO'].values
-        else 'orange' if codigo in status_BI[status_BI['Macro-Status'] == 'postagem']['CODIGO'].values
-        else 'red' if codigo in status_BI[status_BI['Macro-Status'] == 'conciliacao']['CODIGO'].values
-        else 'green' if codigo in status_BI[status_BI['Macro-Status'] == 'concluido']['CODIGO'].values
+        'gray' if status in regiao_df[regiao_df['Macro-Status'] == 'Em planejamento']['ALIMENTADOR'].values 
+        else 'yellow' if status in regiao_df[regiao_df['Macro-Status'] == 'Em postagem']['ALIMENTADOR'].values
+        else 'orange' if status in regiao_df[regiao_df['Macro-Status'] == 'Inventário Paralisado']['ALIMENTADOR'].values
+        else 'red' if status in regiao_df[regiao_df['Macro-Status'] == 'Em campo']['ALIMENTADOR'].values
+        else 'green' if status in regiao_df[regiao_df['Macro-Status'] == 'concluido']['ALIMENTADOR'].values
         else 'blue'
         )
 
@@ -216,7 +216,7 @@ if authentication_status:
         
         status = st.selectbox(
             'Status',
-            (status_BI['Macro-Status'].unique()),
+            (regiao_df['Macro-Status'].unique()),
             index=None,
             placeholder="Selecione Status ..."
             )
@@ -225,9 +225,7 @@ if authentication_status:
             
             regiao_df = regiao_df[regiao_df['Macro-Status'].isin(status)]
             # Verifica se o DataFrame resultante está vazio
-            if regiao_df.empty:
-                # Se estiver vazio, exibe uma mensagem informando que não há alimentadores para o status selecionado
-                st.write("Nenhum alimentador encontrado para o status selecionado.")
+        
             
          
         alimentadores = st.selectbox(
@@ -264,6 +262,13 @@ if authentication_status:
 
             for name, shp_data, color in zip(['ASRO', 'COMUNIDADES_DOMINADAS_PELA_MILICIA', 'COMUNIDADES_DOMINADAS_PELO_AMIGOS_DOS_AMIGOS', 'COMUNIDADES_DOMINADAS_PELO_COMANDO_VEMELHO', 'COMUNIDADES_DOMINADAS_PELO_TERCEIRO_COMANDO_PURO'], [shp_AR1, shp_AR2, shp_AR3, shp_AR4, shp_AR5], colors):
                 folium.Choropleth(geo_data=shp_data, fill_color=color, name=name).add_to(mapa)
+
+               # Função de estilo
+            # def style_function(feature):
+            #     status = feature['properties']['ALIMENTADOR']  # Obtém o código da propriedade do GeoJson
+            #     color = 'red' if status in status else 'blue'  # Define a cor com base na seleção
+            #     GeoJson(regiao_df, name=f'{regional}', style_function=style_function).add_to(mapa)
+            #     return {'color': color, 'weight': 2}
 
             GeoJson(regiao_df, name=f'{regional}').add_to(mapa)
 
