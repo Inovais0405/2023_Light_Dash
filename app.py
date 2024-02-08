@@ -172,7 +172,7 @@ if authentication_status:
     with tab1:
 
         Power_bi_code = '''
-        <iframe title="19.01.2023_Light_Status_Inventario_v3" width="600" height="373.5" src="
+        <iframe title="19.01.2023_Light_Status_Inventario_v3" width="1024" height="1060" src="
         https://app.powerbi.com/view?r=eyJrIjoiNzQ0N2QwYTktZWFhZC00ZmQ1LWFiNzQtODgyN2FmOTg2M2I4IiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9"
         frameborder="0" allowFullScreen="true"></iframe>
         
