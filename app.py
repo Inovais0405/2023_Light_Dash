@@ -33,7 +33,10 @@ def load_data():
     return resultados_fme
 
 #Leitura BI
-status_BI = pd.read_pickle(path_resultados + 'Status_alimentador.pkl')
+@st.cache_data
+def load_BI():
+    status_BI = pd.read_pickle(path_resultados + 'Status_alimentador.pkl')
+    return status_BI
 # Leitura AR
 
 shp_AR0 = pd.read_pickle(path_resultados + "shp_AR0.pkl")
@@ -83,11 +86,11 @@ def style_function(feature):
             
             # Define a cor com base no status
     color = (
-        'gray' if codigo in status_BI[status_BI['Macro-Status'] == 'planejamento']['CODIGO'].values 
-        else 'yellow' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['Macro-Status'] == 'campo']['CODIGO'].values
-        else 'orange' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['Macro-Status'] == 'postagem']['CODIGO'].values
-        else 'red' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['Macro-Status'] == 'conciliacao']['CODIGO'].values
-        else 'green' if codigo in regiao_df_mapas_gdf[regiao_df_mapas_gdf['Macro-Status'] == 'concluido']['CODIGO'].values
+        'gray' if codigo in status_BI[status_BI['Macro-Status'] == 'Em planejamento']['CODIGO'].values 
+        else 'yellow' if codigo in status_BI[status_BI['Macro-Status'] == 'campo']['CODIGO'].values
+        else 'orange' if codigo in status_BI[status_BI['Macro-Status'] == 'postagem']['CODIGO'].values
+        else 'red' if codigo in status_BI[status_BI['Macro-Status'] == 'conciliacao']['CODIGO'].values
+        else 'green' if codigo in status_BI[status_BI['Macro-Status'] == 'concluido']['CODIGO'].values
         else 'blue'
         )
 
@@ -193,6 +196,7 @@ if authentication_status:
         
         # Carrega os dados
         resultados_fme = load_data()
+        status_BI = load_BI()
 
         resultados_fme = resultados_fme.merge(status_BI, on='ALIMENTADOR')
        
@@ -266,25 +270,12 @@ if authentication_status:
        
             
 
-        # # Centroides Localidades
-        # centroide = regiao_df.to_crs(22182).centroid.to_crs(4326).iloc[[0]]
-
-        # # Criar o mapa folium
-        # mapa = folium.Map(location=[centroide.y, centroide.x], zoom_start=13)
-
+        
         # # Adicionar basemaps ao mapa usando um loop
         # for name, tile_layer in basemaps.items():
         #     tile_layer.add_to(mapa)
 
-        # # Adição de Choropleths
-        # colors = ['orange', 'beige', 'pink', 'yellow', 'salmon']
-
-        # for name, shp_data, color in zip(['ASRO', 'COMUNIDADES_DOMINADAS_PELA_MILICIA', 'COMUNIDADES_DOMINADAS_PELO_AMIGOS_DOS_AMIGOS', 'COMUNIDADES_DOMINADAS_PELO_COMANDO_VEMELHO', 'COMUNIDADES_DOMINADAS_PELO_TERCEIRO_COMANDO_PURO'], [shp_AR1, shp_AR2, shp_AR3, shp_AR4, shp_AR5], colors):
-        #     folium.Choropleth(geo_data=shp_data, fill_color=color, name=name).add_to(mapa)
-
-                    
         
-        # GeoJson(regiao_df, name=f'{alimentadores}').add_to(mapa)
 
         # # Função de estilo
         # def style_function(feature):
