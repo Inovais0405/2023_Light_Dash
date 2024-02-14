@@ -256,7 +256,7 @@ if authentication_status:
     #     # Verifica se a opção selecionada não é o placeholder antes de aplicar o filtro
     #    # Verifica se a opção selecionada não é o placeholder e se é uma lista antes de aplicar o filtro
         if alimentadores != 'Selecione a linha ...' and isinstance(alimentadores, list):
-            regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
+            regiao_df = regiao_df[regiao_df['ALIMENTADOR'].isin(alimentadores)]
         
        
         
@@ -297,16 +297,7 @@ if authentication_status:
 
         
 
-        # # Função de estilo
-        # def style_function(feature):
-        #     codigo = feature['properties']['CODIGO']  # Obtém o código da propriedade do GeoJson
-        #     color = 'red' if codigo in codigo_selected else 'blue'  # Define a cor com base na seleção
-
-        #     return {'color': color, 'weight': 2}
         
-        # # Adicionar GeoJson ao mapa com a função de estilo
-        #geojson_layer = GeoJson(regiao_df.to_json(), style_function=style_function).add_to(mapa)
-
         
 
         # if regiao_df['ALIMENTADOR'].tolist() == regiao_df_mapas_gdf['ALIMENTADOR'].tolist():
