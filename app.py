@@ -80,23 +80,28 @@ basemaps = {
     )
 }
 
-def style_function(feature):
-            # Obtém o código da propriedade do GeoJson
-    status = feature['properties'].get('ALIMENTADOR')
+# def style_function(feature):
+#             # Obtém o código da propriedade do GeoJson
+#     regional = feature['properties'].get('ALIMENTADOR')
+#     # Obtém o status do alimentador
+#     status1 = regiao_df.loc[regiao_df['ALIMENTADOR'] == regional, 'Macro-Status'].tolist()
+
+
+    
             
-            # Define a cor com base no status
-    color = (
-        'gray' if status in regiao_df[regiao_df['Macro-Status'] == 'Em planejamento']['ALIMENTADOR'].values 
-        else 'yellow' if status in regiao_df[regiao_df['Macro-Status'] == 'Em postagem']['ALIMENTADOR'].values
-        else 'orange' if status in regiao_df[regiao_df['Macro-Status'] == 'Inventário Paralisado']['ALIMENTADOR'].values
-        else 'red' if status in regiao_df[regiao_df['Macro-Status'] == 'Em campo']['ALIMENTADOR'].values
-        else 'green' if status in regiao_df[regiao_df['Macro-Status'] == 'concluido']['ALIMENTADOR'].values
-        else 'blue'
-        )
+#             # Define a cor com base no status
+#     color = (
+#         'blue' if status1 in regiao_df[regiao_df['Macro-Status'] == 'Em planejamento']['ALIMENTADOR'].values 
+#         else 'yellow' if status1 in regiao_df[regiao_df['Macro-Status'] == 'Em postagem']['ALIMENTADOR'].values
+#         else 'orange' if status1 in regiao_df[regiao_df['Macro-Status'] == 'Inventário Paralisado']['ALIMENTADOR'].values
+#         else 'red' if status1 in regiao_df[regiao_df['Macro-Status'] == 'Em campo']['ALIMENTADOR'].values
+#         else 'green' if status1 in regiao_df[regiao_df['Macro-Status'] == 'concluido']['ALIMENTADOR'].values
+#         else 'gray'
+#         )
 
             
 
-    return {'color': color, 'weight': 2}
+#     return {'color': color, 'weight': 2}
 
 
 
@@ -210,6 +215,18 @@ if authentication_status:
         regional = [regional] if isinstance(regional, str) else regional
         
         regiao_df = resultados_fme[resultados_fme['REGIONAL'].isin(regional)]
+
+        # Mapeamento de status para cor
+        status_colors = {
+            'Em planejamento': 'blue',
+            'Em postagem': 'yellow',
+            'Inventário Paralisado': 'orange',
+            'Em campo': 'red',
+            'concluido': 'green'
+        }
+
+        # Adicionar coluna de cor ao DataFrame
+        regiao_df['cor'] = regiao_df['Macro-Status'].map(status_colors)
         
 
         alim_regional = regiao_df['ALIMENTADOR'].unique()
@@ -263,14 +280,12 @@ if authentication_status:
             for name, shp_data, color in zip(['ASRO', 'COMUNIDADES_DOMINADAS_PELA_MILICIA', 'COMUNIDADES_DOMINADAS_PELO_AMIGOS_DOS_AMIGOS', 'COMUNIDADES_DOMINADAS_PELO_COMANDO_VEMELHO', 'COMUNIDADES_DOMINADAS_PELO_TERCEIRO_COMANDO_PURO'], [shp_AR1, shp_AR2, shp_AR3, shp_AR4, shp_AR5], colors):
                 folium.Choropleth(geo_data=shp_data, fill_color=color, name=name).add_to(mapa)
 
-               # Função de estilo
-            # def style_function(feature):
-            #     status = feature['properties']['ALIMENTADOR']  # Obtém o código da propriedade do GeoJson
-            #     color = 'red' if status in status else 'blue'  # Define a cor com base na seleção
-            #     GeoJson(regiao_df, name=f'{regional}', style_function=style_function).add_to(mapa)
-            #     return {'color': color, 'weight': 2}
-
-            GeoJson(regiao_df, name=f'{regional}').add_to(mapa)
+               
+               
+            # Adicionar GeoJson ao mapa com base na nova coluna de cor
+            GeoJson(regiao_df, style_function=lambda feature: {'color': feature['properties']['cor'], 'weight': 2}).add_to(mapa)
+               
+            #GeoJson(regiao_df, name=f'{regional}').add_to(mapa)
 
        
             
