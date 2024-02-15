@@ -170,7 +170,7 @@ if authentication_status:
 
         #Definição das abas
         
-    tab1, tab2 = st.tabs(["Painel Gerencial", "Mapas"])
+    tab1, tab2, tab3 = st.tabs(["Painel Gerencial", "Produtividade", "Mapas"])
 
         # Power BI
 
@@ -183,9 +183,19 @@ if authentication_status:
         
         '''
         st.markdown(Power_bi_code,unsafe_allow_html=True)
+    
+    with tab2:
+
+        Power_bi_code_produtividade = '''
+        <iframe title="Produtividade" width="1024" height="1060" src="
+         https://app.powerbi.com/reportEmbed?reportId=7bd3f066-9d8e-4643-80c0-9eb2e42f9590&autoAuth=true&ctid=0c6c23de-546b-45ff-811a-a88cc514ae5f"
+        frameborder="0" allowFullScreen="true"></iframe>
+        
+        '''
+        st.markdown(Power_bi_code_produtividade,unsafe_allow_html=True)
 
         # Mapas
-    with tab2:
+    with tab3:
 
         # regiao_df_mapas = pd.read_excel('regiao_df_mapas.xlsx')
 
@@ -218,7 +228,7 @@ if authentication_status:
 
         # Mapeamento de status para cor
         status_colors = {
-            'Em planejamento': 'blue',
+            'Em planejamento': 'gray',
             'Em postagem': 'yellow',
             'Inventário Paralisado': 'orange',
             'Em campo': 'red',
