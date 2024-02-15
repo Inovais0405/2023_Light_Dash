@@ -8,6 +8,8 @@ from folium import Map, FeatureGroup, Marker, LayerControl, Popup
 from streamlit_folium import folium_static
 from folium import Choropleth, GeoJson, plugins
 from folium import GeoJson
+from branca.element import MacroElement
+from jinja2 import Template
 from shapely.ops import unary_union
 import os
 #import json
@@ -177,7 +179,7 @@ if authentication_status:
     with tab1:
 
         Power_bi_code = '''
-        <iframe title="19.01.2023_Light_Status_Inventario_v3" width="1024" height="1060" src="
+        <iframe class="full-width" title="19.01.2023_Light_Status_Inventario_v3" width="1024" height="612" src="
         https://app.powerbi.com/view?r=eyJrIjoiNzQ0N2QwYTktZWFhZC00ZmQ1LWFiNzQtODgyN2FmOTg2M2I4IiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9"
         frameborder="0" allowFullScreen="true"></iframe>
         
@@ -187,7 +189,7 @@ if authentication_status:
     with tab2:
 
         Power_bi_code_produtividade = '''
-        <iframe title="Produtividade" width="1024" height="1060" src="
+        <iframe title="Produtividade" width="1024" height="612" src="
          https://app.powerbi.com/reportEmbed?reportId=7bd3f066-9d8e-4643-80c0-9eb2e42f9590&autoAuth=true&ctid=0c6c23de-546b-45ff-811a-a88cc514ae5f"
         frameborder="0" allowFullScreen="true"></iframe>
         
@@ -278,7 +280,7 @@ if authentication_status:
             centroide = regiao_df.to_crs(22182).centroid.to_crs(4326).iloc[[0]]
 
             # Criar o mapa folium
-            mapa = folium.Map(location=[centroide.y, centroide.x], zoom_start=13)
+            mapa = folium.Map(location=[centroide.y, centroide.x], zoom_start=12)
 
             # Adicionar basemaps ao mapa usando um loop
             for name, tile_layer in basemaps.items():
@@ -290,7 +292,40 @@ if authentication_status:
             for name, shp_data, color in zip(['ASRO', 'COMUNIDADES_DOMINADAS_PELA_MILICIA', 'COMUNIDADES_DOMINADAS_PELO_AMIGOS_DOS_AMIGOS', 'COMUNIDADES_DOMINADAS_PELO_COMANDO_VEMELHO', 'COMUNIDADES_DOMINADAS_PELO_TERCEIRO_COMANDO_PURO'], [shp_AR1, shp_AR2, shp_AR3, shp_AR4, shp_AR5], colors):
                 folium.Choropleth(geo_data=shp_data, fill_color=color, name=name).add_to(mapa)
 
-               
+
+            # Create the legend template as an HTML element
+            legend_html = """
+            <div id='maplegend' class='maplegend' 
+                style='position: fixed; z-index: 9999; background-color: rgba(255, 255, 255, 0.5);
+                border-radius: 6px; padding: 10px; font-size: 10.5px; right: 20px; top: 20px;'>     
+            <div class='legend-scale'>
+            <ul class='legend-labels'>
+                <li><span style='background: blue; opacity: 0.75;'></span>Em planejamento</li>
+                <li><span style='background: yellow; opacity: 0.75;'></span>Em postagem</li>
+                <li><span style='background: orange; opacity: 0.75;'></span>Inventário Paralisado</li>
+                <li><span style='background: red; opacity: 0.75;'></span>Em campo</li>
+                <li><span style='background: green; opacity: 0.75;'></span>Concluído</li>
+            </ul>
+            </div>
+            </div>
+            """
+
+            # Add the legend HTML to the map
+            macro = MacroElement()
+            macro._template = Template(legend_html)
+            mapa.get_root().add_child(macro)
+            
+            # Criar uma legenda personalizada em HTML
+            # legenda_html = '''
+            #     <div style="position: fixed; bottom: 50px; left: 50px; z-index:9999; padding: 10px; background-color: white; border: 2px solid grey; border-radius: 5px;">
+            #         <h4>Legenda</h4>
+            #         <p><i style="background:gray; border-radius: 50%; padding: 2px;"></i> Em planejamento</p>
+            #         <p><i style="background:red; border-radius: 50%; padding: 2px;"></i> Item 2</p>
+            #     </div>
+            # '''
+
+            # # Adicionar a legenda HTML ao mapa
+            # mapa.get_root().html.add_child(folium.Element(legenda_html)) 
                
             # Adicionar GeoJson ao mapa com base na nova coluna de cor
             GeoJson(regiao_df, style_function=lambda feature: {'color': feature['properties']['cor'], 'weight': 2}).add_to(mapa)
@@ -346,7 +381,7 @@ if authentication_status:
 
         if st.button("Baixar Mapa como HTML"):
             # Caixa de texto para inserir o caminho
-            caminho_salvar = st.text_input("Arquivo:", value= alimentadores[0] + ".html")
+            caminho_salvar = st.text_input("Arquivo:", value= regional[0] + ".html")
 
             if caminho_salvar:
                 # Adicionar o arquivo temporário para download
