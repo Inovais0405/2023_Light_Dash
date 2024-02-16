@@ -10,6 +10,7 @@ from folium import Choropleth, GeoJson, plugins
 from folium import GeoJson
 from branca.element import MacroElement
 from jinja2 import Template
+import branca
 from shapely.ops import unary_union
 import os
 #import json
@@ -20,6 +21,7 @@ import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
 from PIL import Image
+#from streamlit.components.v1 import components
 
 
 
@@ -184,6 +186,7 @@ if authentication_status:
         frameborder="0" allowFullScreen="true"></iframe>
         
         '''
+        #components.html(Power_bi_code, height=1000, width=1200)
         st.markdown(Power_bi_code,unsafe_allow_html=True)
     
     with tab2:
@@ -295,25 +298,28 @@ if authentication_status:
 
             # Create the legend template as an HTML element
             legend_html = """
+            {%macro html(this,kwargs)%}
             <div id='maplegend' class='maplegend' 
-                style='position: fixed; z-index: 9999; background-color: rgba(255, 255, 255, 0.5);
-                border-radius: 6px; padding: 10px; font-size: 10.5px; right: 20px; top: 20px;'>     
+                style='position: fixed; z-index: 9998; background-color: rgba(255, 255, 255, 0.5);
+                bottom: 12px; left: 570px; width: 120px; height: 100px; font-size: 10.5px; border: 1px solid gray; border-radius: 6px;'>
+            <a style = "color: black; margin-left: 30px;"<><b>Legenda</b></a>     
             <div class='legend-scale'>
-            <ul class='legend-labels'>
-                <li><span style='background: blue; opacity: 0.75;'></span>Em planejamento</li>
-                <li><span style='background: yellow; opacity: 0.75;'></span>Em postagem</li>
-                <li><span style='background: orange; opacity: 0.75;'></span>Inventário Paralisado</li>
-                <li><span style='background: red; opacity: 0.75;'></span>Em campo</li>
-                <li><span style='background: green; opacity: 0.75;'></span>Concluído</li>
+            <ul class='legend-labels' style="list-style-type: none; padding: 0; margin: 0;">
+                <li><a style='color: gray; margin-left: 2px;'>&FilledSmallSquare; </a> Em planejamento </li>
+                <li><a style='color: yellow; margin-left: 2px;'>&FilledSmallSquare; </a> Em postagem </li>
+                <li><a style='color: orange; margin-left: 2px;'>&FilledSmallSquare; </a>Inventário Paralisado </li>
+                <li><a style='color: red; margin-left: 2px;'>&FilledSmallSquare; </a>Em campo </li>
+                <li><a style='color: green; margin-left: 2px;'>&FilledSmallSquare; </a>Concluído </li>
+            
             </ul>
             </div>
-            </div>
+            {% endmacro %}
             """
 
             # Add the legend HTML to the map
-            macro = MacroElement()
-            macro._template = Template(legend_html)
-            mapa.get_root().add_child(macro)
+            macro = branca.element.MacroElement()
+            macro._template = branca.element.Template(legend_html)
+            mapa.add_child(macro)
             
             # Criar uma legenda personalizada em HTML
             # legenda_html = '''
@@ -333,7 +339,7 @@ if authentication_status:
             #GeoJson(regiao_df, name=f'{regional}').add_to(mapa)
 
        
-            
+            # border-radius: 6px; padding: 10px; font-size: 10.5px; right: 20px; top: 20px;'> 
 
         
         # # Adicionar basemaps ao mapa usando um loop
