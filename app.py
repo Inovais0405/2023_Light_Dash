@@ -84,32 +84,7 @@ basemaps = {
     )
 }
 
-# def style_function(feature):
-#             # Obtém o código da propriedade do GeoJson
-#     regional = feature['properties'].get('ALIMENTADOR')
-#     # Obtém o status do alimentador
-#     status1 = regiao_df.loc[regiao_df['ALIMENTADOR'] == regional, 'Macro-Status'].tolist()
-
-
-    
-            
-#             # Define a cor com base no status
-#     color = (
-#         'blue' if status1 in regiao_df[regiao_df['Macro-Status'] == 'Em planejamento']['ALIMENTADOR'].values 
-#         else 'yellow' if status1 in regiao_df[regiao_df['Macro-Status'] == 'Em postagem']['ALIMENTADOR'].values
-#         else 'orange' if status1 in regiao_df[regiao_df['Macro-Status'] == 'Inventário Paralisado']['ALIMENTADOR'].values
-#         else 'red' if status1 in regiao_df[regiao_df['Macro-Status'] == 'Em campo']['ALIMENTADOR'].values
-#         else 'green' if status1 in regiao_df[regiao_df['Macro-Status'] == 'concluido']['ALIMENTADOR'].values
-#         else 'gray'
-#         )
-
-            
-
-#     return {'color': color, 'weight': 2}
-
-
-
-
+#
 
 
 # Setando pagina do stream lit
@@ -181,7 +156,7 @@ if authentication_status:
     with tab1:
 
         Power_bi_code = '''
-        <iframe class="full-width" title="19.01.2023_Light_Status_Inventario_v3" width="1024" height="612" src="
+        <iframe class="full-width" title="19.01.2023_Light_Status_Inventario_v3" width="1500" height="800" src="
         https://app.powerbi.com/view?r=eyJrIjoiNzQ0N2QwYTktZWFhZC00ZmQ1LWFiNzQtODgyN2FmOTg2M2I4IiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9"
         frameborder="0" allowFullScreen="true"></iframe>
         
@@ -192,7 +167,7 @@ if authentication_status:
     with tab2:
 
         Power_bi_code_produtividade = '''
-        <iframe title="Produtividade" width="1024" height="612" src="
+        <iframe title="Produtividade" width="1500" height="800" src="
          https://app.powerbi.com/reportEmbed?reportId=7bd3f066-9d8e-4643-80c0-9eb2e42f9590&autoAuth=true&ctid=0c6c23de-546b-45ff-811a-a88cc514ae5f"
         frameborder="0" allowFullScreen="true"></iframe>
         
@@ -202,23 +177,16 @@ if authentication_status:
         # Mapas
     with tab3:
 
-        # regiao_df_mapas = pd.read_excel('regiao_df_mapas.xlsx')
-
-        # regiao_df_mapas['geometry'] = regiao_df_mapas['geometry'].apply(wkt.loads)
-
-        #regiao_df_mapas_gdf = gpd.GeoDataFrame(regiao_df_mapas, geometry='geometry')
-
-        
-        
-        
-        # # )
-
-        
+                
         # Carrega os dados
         resultados_fme = load_data()
         status_BI = load_BI()
 
         resultados_fme = resultados_fme.merge(status_BI, on='ALIMENTADOR')
+
+        # Adiciona um espaço em branco para mover o select box para a direita
+        st.write('<style>div.Widget.row-widget.stRadio > div{flex-direction: row-reverse}</style>', unsafe_allow_html=True)
+
        
         regional = st.selectbox(
             'Regional',
@@ -231,13 +199,14 @@ if authentication_status:
         
         regiao_df = resultados_fme[resultados_fme['REGIONAL'].isin(regional)]
 
+        
         # Mapeamento de status para cor
         status_colors = {
             'Em planejamento': 'gray',
-            'Em postagem': 'yellow',
-            'Inventário Paralisado': 'orange',
             'Em campo': 'red',
-            'concluido': 'green'
+            'Em postagem': 'yellow',
+            'concluido': 'green',
+            'Inventário Paralisado': 'orange'
         }
 
         # Adicionar coluna de cor ao DataFrame
@@ -274,7 +243,7 @@ if authentication_status:
             regiao_df = regiao_df[regiao_df['ALIMENTADOR'].isin(alimentadores)]
         
        
-        
+      
         # Lógica para a criação do mapa
         with st.spinner("Carregando mapa..."):
             
@@ -283,7 +252,7 @@ if authentication_status:
             centroide = regiao_df.to_crs(22182).centroid.to_crs(4326).iloc[[0]]
 
             # Criar o mapa folium
-            mapa = folium.Map(location=[centroide.y, centroide.x], zoom_start=12)
+            mapa = folium.Map(location=[centroide.y, centroide.x], zoom_start=13)
 
             # Adicionar basemaps ao mapa usando um loop
             for name, tile_layer in basemaps.items():
@@ -293,7 +262,7 @@ if authentication_status:
             colors = ['orange', 'beige', 'pink', 'yellow', 'salmon']
 
             for name, shp_data, color in zip(['ASRO', 'COMUNIDADES_DOMINADAS_PELA_MILICIA', 'COMUNIDADES_DOMINADAS_PELO_AMIGOS_DOS_AMIGOS', 'COMUNIDADES_DOMINADAS_PELO_COMANDO_VEMELHO', 'COMUNIDADES_DOMINADAS_PELO_TERCEIRO_COMANDO_PURO'], [shp_AR1, shp_AR2, shp_AR3, shp_AR4, shp_AR5], colors):
-                folium.Choropleth(geo_data=shp_data, fill_color=color, name=name).add_to(mapa)
+                folium.Choropleth(geo_data=shp_data, fill_color='pink', name=name).add_to(mapa)
 
 
             # Create the legend template as an HTML element
@@ -301,15 +270,16 @@ if authentication_status:
             {%macro html(this,kwargs)%}
             <div id='maplegend' class='maplegend' 
                 style='position: fixed; z-index: 9998; background-color: rgba(255, 255, 255, 0.5);
-                bottom: 12px; left: 570px; width: 120px; height: 100px; font-size: 10.5px; border: 1px solid gray; border-radius: 6px;'>
+                bottom: 12px; left: 1350px; width: 120px; height: 110px; font-size: 10.5px; border: 1px solid gray; border-radius: 6px;'>
             <a style = "color: black; margin-left: 30px;"<><b>Legenda</b></a>     
             <div class='legend-scale'>
             <ul class='legend-labels' style="list-style-type: none; padding: 0; margin: 0;">
                 <li><a style='color: gray; margin-left: 2px;'>&FilledSmallSquare; </a> Em planejamento </li>
-                <li><a style='color: yellow; margin-left: 2px;'>&FilledSmallSquare; </a> Em postagem </li>
-                <li><a style='color: orange; margin-left: 2px;'>&FilledSmallSquare; </a>Inventário Paralisado </li>
                 <li><a style='color: red; margin-left: 2px;'>&FilledSmallSquare; </a>Em campo </li>
+                <li><a style='color: yellow; margin-left: 2px;'>&FilledSmallSquare; </a> Em postagem </li>
                 <li><a style='color: green; margin-left: 2px;'>&FilledSmallSquare; </a>Concluído </li>
+                <li><a style='color: orange; margin-left: 2px;'>&FilledSmallSquare; </a>Inventário Paralisado </li>
+                <li><a style='color: pink; margin-left: 2px;'>&FilledSmallSquare; </a>Áreas de Risco </li>
             
             </ul>
             </div>
@@ -321,17 +291,7 @@ if authentication_status:
             macro._template = branca.element.Template(legend_html)
             mapa.add_child(macro)
             
-            # Criar uma legenda personalizada em HTML
-            # legenda_html = '''
-            #     <div style="position: fixed; bottom: 50px; left: 50px; z-index:9999; padding: 10px; background-color: white; border: 2px solid grey; border-radius: 5px;">
-            #         <h4>Legenda</h4>
-            #         <p><i style="background:gray; border-radius: 50%; padding: 2px;"></i> Em planejamento</p>
-            #         <p><i style="background:red; border-radius: 50%; padding: 2px;"></i> Item 2</p>
-            #     </div>
-            # '''
-
-            # # Adicionar a legenda HTML ao mapa
-            # mapa.get_root().html.add_child(folium.Element(legenda_html)) 
+             
                
             # Adicionar GeoJson ao mapa com base na nova coluna de cor
             GeoJson(regiao_df, style_function=lambda feature: {'color': feature['properties']['cor'], 'weight': 2}).add_to(mapa)
@@ -380,7 +340,9 @@ if authentication_status:
         
 
         # Exibir mapa 
-        folium_static(mapa)
+        folium_static(mapa, width=1500, height=800)
+
+        
     
 
 
