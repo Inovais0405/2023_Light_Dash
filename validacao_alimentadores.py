@@ -173,4 +173,4 @@ if st.button("Baixar Mapa como HTML"):
                 )
 
 # Exibir mapa 
-folium_static(mapa, width=1500, height=800)
+folium_static(mapa, width=1300, height=600)
