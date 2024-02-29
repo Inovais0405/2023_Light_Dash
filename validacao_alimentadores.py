@@ -26,6 +26,16 @@ def load_data():
     resultados_fme = pd.read_pickle(path_resultados + '16-02-24_Trechos_alimentadores.pkl')
     return resultados_fme
 
+@st.cache_data
+def load_trafo():
+    resultados_trafo = pd.read_pickle(path_resultados + 'trafo.pkl')
+    return resultados_trafo
+
+@st.cache_data
+def load_SE():
+    resultados_SE = pd.read_pickle(path_resultados + 'SE.pkl')
+    return resultados_SE
+
 # Leitura AR
 
 shp_AR0 = pd.read_pickle(path_resultados + "shp_AR0.pkl")
@@ -70,9 +80,16 @@ basemaps = {
     )
 }
 
+# Setando pagina do stream lit
+
+st.set_page_config(layout="wide")#, page_icon = "D:/2023_Light_Dash/logo.png")
 
 # Carrega os dados
 resultados_fme = load_data()
+resultados_trafo = load_trafo()
+resultados_SE = load_SE()
+
+
 
 alimentadores = st.multiselect(
     'Linha',
@@ -84,7 +101,26 @@ alimentadores = st.multiselect(
 if alimentadores:  # Verifica se a lista não está vazia antes de aplicar o filtro
     regiao_df = resultados_fme[resultados_fme['ALIMENTADOR'].isin(alimentadores)]
 
- 
+trafo = st.multiselect(
+    'TRANSFORMADORES',
+    resultados_trafo['LINHA'].unique(),
+    default=None,
+    help="Selecione a(s) linha(s) ..."
+)
+
+if alimentadores:  # Verifica se a lista não está vazia antes de aplicar o filtro
+    regiao_TRAFO = resultados_trafo[resultados_trafo['LINHA'].isin(trafo)]
+
+    
+SE = st.multiselect(
+    'SUBESTAÇÃO',
+    resultados_SE['NOME'].unique(),
+    default=None,
+    help="Selecione a(s) linha(s) ..."
+)
+
+if alimentadores:  # Verifica se a lista não está vazia antes de aplicar o filtro
+    regiao_SE = resultados_SE[resultados_SE['NOME'].isin(SE)]
 
 # Centroides Localidades
 centroide = regiao_df.to_crs(22182).centroid.to_crs(4326).iloc[[0]]
@@ -104,13 +140,37 @@ for name, shp_data, color in zip(['ASRO', 'COMUNIDADES_DOMINADAS_PELA_MILICIA', 
 
 GeoJson(regiao_df, name=f'{alimentadores}').add_to(mapa)
 
+
+
+GeoJson(regiao_TRAFO, name=f'{trafo}').add_to(mapa)
+
+# Adicionar popups aos marcadores
+for idx, row in regiao_TRAFO.iterrows():
+    folium.Marker(
+        location=[row.geometry.y, row.geometry.x],  # Substitua pelas suas coordenadas
+        popup=row['MATRICULA']  # Adicione o número da matrícula como popup
+    ).add_to(mapa)
+
+GeoJson(regiao_SE, name=f'{SE}', style_function=lambda x: {'fillColor': 'red', 'fillOpacity': 0.6}, tooltip=SE).add_to(mapa)
+
 # Adicionar controle de camadas
 folium.LayerControl().add_to(mapa)
 
 # Adicionar controle de tela cheia
 plugins.Fullscreen().add_to(mapa)
 
+if st.button("Baixar Mapa como HTML"):
+            # Caixa de texto para inserir o caminho
+            caminho_salvar = st.text_input("Arquivo:", value= SE[0] + ".html")
 
+            if caminho_salvar:
+                # Adicionar o arquivo temporário para download
+                st.download_button(
+                    label="Clique para baixar",
+                    data=mapa.get_root().render(),
+                    file_name=os.path.join(caminho_salvar),
+                    key="download_mapa_html"
+                )
 
 # Exibir mapa 
 folium_static(mapa, width=1500, height=800)

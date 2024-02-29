@@ -33,7 +33,7 @@ path_resultados = "BASE_DADOS/"
 
 @st.cache_data
 def load_data():
-    resultados_fme = pd.read_pickle(path_resultados + '01_13.12.2023_Extracao_Trechos_alimentadores.pkl')
+    resultados_fme = pd.read_pickle(path_resultados + '16-02-24_Trechos_alimentadores.pkl')
     return resultados_fme
 
 #Leitura BI
@@ -156,8 +156,8 @@ if authentication_status:
     with tab1:
 
         Power_bi_code = '''
-        <iframe class="full-width" title="19.01.2023_Light_Status_Inventario_v3" width="1500" height="800" src="
-        https://app.powerbi.com/view?r=eyJrIjoiNzQ0N2QwYTktZWFhZC00ZmQ1LWFiNzQtODgyN2FmOTg2M2I4IiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9"
+        <iframe title="19.01.2023_Light_Status_Inventario_v3" width="1500" height="800" src="
+        https://app.powerbi.com/view?r=eyJrIjoiYTNiZDQ2OGQtNjg3NC00YjBmLTk0ZGItNzRlMzAxY2YwZDQ2IiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9"
         frameborder="0" allowFullScreen="true"></iframe>
         
         '''
@@ -167,8 +167,8 @@ if authentication_status:
     with tab2:
 
         Power_bi_code_produtividade = '''
-        <iframe title="Produtividade" width="1500" height="800" src="
-         https://app.powerbi.com/reportEmbed?reportId=7bd3f066-9d8e-4643-80c0-9eb2e42f9590&autoAuth=true&ctid=0c6c23de-546b-45ff-811a-a88cc514ae5f"
+        <iframe title="Inventário de Ativos_produtividade" width="1500" height="800" src="
+        https://app.powerbi.com/view?r=eyJrIjoiNGRhOTI3NjQtOTVkNi00MWYxLTk1YjUtNmYwNWRmMmE5OTMxIiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9"
         frameborder="0" allowFullScreen="true"></iframe>
         
         '''
