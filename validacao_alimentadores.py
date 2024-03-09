@@ -36,6 +36,11 @@ def load_SE():
     resultados_SE = pd.read_pickle(path_resultados + 'SE.pkl')
     return resultados_SE
 
+@st.cache_data
+def load_TRFOTOS():
+     resultados_trafo_fotos = pd.read_pickle(path_resultados + 'df_dist_fotos.pkl')
+     return resultados_trafo_fotos
+
 # Leitura AR
 
 shp_AR0 = pd.read_pickle(path_resultados + "shp_AR0.pkl")
@@ -84,10 +89,11 @@ basemaps = {
 
 st.set_page_config(layout="wide")#, page_icon = "D:/2023_Light_Dash/logo.png")
 
-# Carrega os dados
+# Carrega os dados cache que são gerados a partir da leitura dos arquivos pickle, fiz usando o cache pois ficou mais rápido.
 resultados_fme = load_data()
 resultados_trafo = load_trafo()
 resultados_SE = load_SE()
+resultados_trafo_fotos = load_TRFOTOS()
 
 
 
@@ -111,6 +117,18 @@ trafo = st.multiselect(
 if alimentadores:  # Verifica se a lista não está vazia antes de aplicar o filtro
     regiao_TRAFO = resultados_trafo[resultados_trafo['LINHA'].isin(trafo)]
 
+# Diogo fiz esse filtro para selecionar o trafo que já foi verificado em campo pela coluna LINHA, deveria estar funcionando mas acho que o arquivo pickle está com problema por ter
+# sido gerado com duas colunas geometry, depois tenta substituir e vê se aparece o pin verde
+
+trafo_fotos = st.multiselect(
+    'TRANSFORMADORES CAMPO',
+    resultados_trafo_fotos['LINHA'].unique(),
+    default=None,
+    help="Selecione a(s) linha(s) ..."
+)
+
+if alimentadores:  # Verifica se a lista não está vazia antes de aplicar o filtro
+    regiao_TRAFO_fotos = resultados_trafo_fotos[resultados_trafo_fotos['LINHA'].isin(trafo_fotos)]
     
 SE = st.multiselect(
     'SUBESTAÇÃO',
@@ -152,6 +170,24 @@ for idx, row in regiao_TRAFO.iterrows():
     ).add_to(mapa)
 
 GeoJson(regiao_SE, name=f'{SE}', style_function=lambda x: {'fillColor': 'red', 'fillOpacity': 0.6}, tooltip=SE).add_to(mapa)
+
+
+# # adicionando no mapa quando filtrado no streamlit os pins dos trafos de campo com popups
+
+
+GeoJson(regiao_TRAFO_fotos, name=f'{trafo_fotos}').add_to(mapa)
+color_pin = 'green'
+# Adicionar popups aos marcadores
+for idx, row in regiao_TRAFO_fotos.iterrows():
+    folium.Marker(
+        location=[row.geometry.y, row.geometry.x],  # Substitua pelas suas coordenadas
+        popup=row['ID'],  # Adicione o número da matrícula como popup
+        icon=folium.Icon(color=color_pin)
+    ).add_to(mapa)
+
+GeoJson(regiao_SE, name=f'{SE}', style_function=lambda x: {'fillColor': 'red', 'fillOpacity': 0.6}, tooltip=SE).add_to(mapa)
+
+
 
 # Adicionar controle de camadas
 folium.LayerControl().add_to(mapa)
