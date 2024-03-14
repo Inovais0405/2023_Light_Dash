@@ -36,10 +36,10 @@ credentials:
       email: jean.silva3@light.com.br
       name: Jean Silva
       password: $2b$12$IGDKHse5wxE7XAcQ4./u7OMr.NKyErMX/mP4LF3S5g7kaFE6Krbv. # To be replaced with hashed password
-    # abaldini:
-    #   email: alexandre.baldini@light.com.br
-    #   name: Alexandre Baldini
-    #   password: $2b$12$N5ZVPI3QHIOeAnndOLnsje9RUduwrpDIBBUxS8uKZ3KEnjvdugDV2 # To be replaced with hashed password
+    abaldini:
+      email: alexandre.baldini@light.com.br
+      name: Alexandre Baldini
+      password: $2b$12$N5ZVPI3QHIOeAnndOLnsje9RUduwrpDIBBUxS8uKZ3KEnjvdugDV2 # To be replaced with hashed password
       
 cookie:
   expiry_days: 0
