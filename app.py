@@ -167,7 +167,7 @@ if authentication_status:
     with tab2:
 
         Power_bi_code_produtividade = '''
-        <iframe title="Inventário de Ativos_produtividade" width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiNGRhOTI3NjQtOTVkNi00MWYxLTk1YjUtNmYwNWRmMmE5OTMxIiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9" frameborder="0" allowFullScreen="true"></iframe>
+        <iframe title="Inventário de Ativos_produtividade" width="1500" height="800" src="https://app.powerbi.com/view?r=eyJrIjoiNGRhOTI3NjQtOTVkNi00MWYxLTk1YjUtNmYwNWRmMmE5OTMxIiwidCI6IjVkMjkzNTZkLTYwOWQtNDQ0Zi1hMjJmLTlkMzgwMjJiMDBlZiJ9" frameborder="0" allowFullScreen="true"></iframe>
         
         '''
         st.markdown(Power_bi_code_produtividade,unsafe_allow_html=True)
