@@ -19,6 +19,8 @@ from shapely import wkt
 import streamlit_authenticator as stauth
 
 
+
+
 path_resultados = "BASE_DADOS/"
 
 @st.cache_data
@@ -43,12 +45,12 @@ def load_TRFOTOS():
 
 # Leitura AR
 
-shp_AR0 = pd.read_pickle(path_resultados + "shp_AR0.pkl")
-shp_AR1 = pd.read_pickle(path_resultados + "shp_AR1.pkl")
-shp_AR2 = pd.read_pickle(path_resultados + "shp_AR2.pkl")
-shp_AR3 = pd.read_pickle(path_resultados + "shp_AR3.pkl")
-shp_AR4 = pd.read_pickle(path_resultados + "shp_AR4.pkl")
-shp_AR5 = pd.read_pickle(path_resultados + "shp_AR5.pkl")
+# shp_AR0 = pd.read_pickle(path_resultados + "shp_AR0.pkl")
+shp_AR1 = pd.read_pickle(path_resultados + "Auditorias/AR/shp_AR1.pkl")
+shp_AR2 = pd.read_pickle(path_resultados + "Auditorias/AR/shp_AR2.pkl")
+shp_AR3 = pd.read_pickle(path_resultados + "Auditorias/AR/shp_AR3.pkl")
+shp_AR4 = pd.read_pickle(path_resultados + "Auditorias/AR/shp_AR4.pkl")
+shp_AR5 = pd.read_pickle(path_resultados + "Auditorias/AR/shp_AR5.pkl")
 
 
 # Mapas
@@ -91,6 +93,7 @@ st.set_page_config(layout="wide")#, page_icon = "D:/2023_Light_Dash/logo.png")
 
 # Carrega os dados cache que são gerados a partir da leitura dos arquivos pickle, fiz usando o cache pois ficou mais rápido.
 resultados_fme = load_data()
+print(resultados_fme)
 resultados_trafo = load_trafo()
 resultados_SE = load_SE()
 resultados_trafo_fotos = load_TRFOTOS()
@@ -166,7 +169,7 @@ GeoJson(regiao_TRAFO, name=f'{trafo}').add_to(mapa)
 for idx, row in regiao_TRAFO.iterrows():
     folium.Marker(
         location=[row.geometry.y, row.geometry.x],  # Substitua pelas suas coordenadas
-        popup=row['MATRICULA']  # Adicione o número da matrícula como popup
+        popup=row['MATR']  # Adicione o número da matrícula como popup
     ).add_to(mapa)
 
 GeoJson(regiao_SE, name=f'{SE}', style_function=lambda x: {'fillColor': 'red', 'fillOpacity': 0.6}, tooltip=SE).add_to(mapa)
